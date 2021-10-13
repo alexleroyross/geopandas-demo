@@ -1,2 +1,9 @@
 venv*
 .idea
+*.shx
+*.shp
+*.dbf
+*.prj
+*.cpg
+*.html
+Shapefiles

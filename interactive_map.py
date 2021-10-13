@@ -20,7 +20,7 @@ if __name__ == '__main__':
     table = table.dropna(subset=['2020'])
 
     # Create an interactive Folium map
-    my_map = folium.Map()
+    forest_map = folium.Map()
 
     # Add our data to the map
     folium.Choropleth(
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         line_opacity=0.2,
         legend_name='Forest area in units of 1,000 hectares',
         bins=9
-    ).add_to(my_map)
+    ).add_to(forest_map)
 
     # Save the map as an HTML file
-    my_map.save('forest.html')
+    forest_map.save('forest.html')
