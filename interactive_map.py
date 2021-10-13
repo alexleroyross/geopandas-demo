@@ -1,21 +1,40 @@
 import pandas as pd
 import geopandas as gpd
-import matplotlib.pyplot as plt
-import certifi
+import folium
 
 if __name__ == '__main__':
-    # nybb = gpd.read_file(gpd.datasets.get_path('nybb'))
+    # Read in a world map from the default GeoPandas data store
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-    # cities = gpd.read_file(gpd.datasets.get_path('naturalearth_cities'))
 
-    url = 'https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)_per_capita'
+    # Read the URL containing tables of data
+    url = 'https://en.wikipedia.org/wiki/List_of_countries_by_forest_area'
     tables = pd.read_html(url)
+
+    # Grab the 2nd table from the page, which contains our data
     table = tables[1]
-    table['Country/Territory'] = table['Country/Territory'].apply(str).str.split('\\')[0]
-    table = world.merge(table, how="left", left_on=['name'], right_on=['Country/Territory'])
 
-    pass
+    # Merge the world DataFrame into our data table
+    table = world.merge(table, how="left", left_on=['name'], right_on=['Country'])
 
-    # nybb.explore()
+    # Remove any rows that contain no data
+    table = table.dropna(subset=['2020'])
 
-    # plt.show()
+    # Create an interactive Folium map
+    my_map = folium.Map()
+
+    # Add our data to the map
+    folium.Choropleth(
+        geo_data=table,
+        name='choropleth',
+        data=table,
+        columns=['Country', '2020'],
+        key_on='feature.properties.name',
+        fill_color='YlGn',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name='Forest area in units of 1,000 hectares',
+        bins=9
+    ).add_to(my_map)
+
+    # Save the map as an HTML file
+    my_map.save('forest.html')
